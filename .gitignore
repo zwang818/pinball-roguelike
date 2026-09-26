@@ -1,0 +1,12 @@
+# Godot editor cache and generated metadata
+.godot/
+*.import
+*.uid
+
+# macOS and Python cache files
+.DS_Store
+tools/__pycache__/
+
+# Local Web export artifacts that are not needed by the Pages branch
+MyGodotGameWeb/*.zip
+MyGodotGameWeb/__MACOSX/

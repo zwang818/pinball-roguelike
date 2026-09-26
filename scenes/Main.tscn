@@ -1,0 +1,563 @@
+[gd_scene format=3 uid="uid://bbtr7v78g5dr4"]
+
+[ext_resource type="Texture2D" uid="uid://bxgvq41e7vypf" path="res://icon.svg" id="1_ball_texture"]
+[ext_resource type="Script" uid="uid://bvh7pxjn2roh2" path="res://scripts/game_controller.gd" id="1_game_controller"]
+[ext_resource type="Script" uid="uid://bvwe57lsd821y" path="res://scripts/peg_board_setup.gd" id="2_peg_board"]
+[ext_resource type="Script" uid="uid://bnk5wif7tda4n" path="res://scripts/launcher.gd" id="3_launcher"]
+[ext_resource type="Texture2D" uid="uid://lia6pqh8mafi" path="res://assets/launcher.svg" id="4_launcher_texture"]
+[ext_resource type="Script" uid="uid://dwa5ydecbx6jm" path="res://scripts/score_zone.gd" id="5_score_zone"]
+[ext_resource type="FontFile" path="res://assets/fonts/NotoSansSC-400.woff2" id="6_ui_font"]
+[ext_resource type="Script" path="res://scripts/audio_manager.gd" id="7_audio_manager"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_walls"]
+friction = 0.1
+bounce = 0.8
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(1900, 20)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_ball"]
+friction = 0.1
+bounce = 0.8
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ball"]
+radius = 20.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vertical_wall"]
+size = Vector2(20, 1080)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ceiling"]
+size = Vector2(1920, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_score_zone"]
+size = Vector2(250, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_miss_left"]
+size = Vector2(355, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_miss_right"]
+size = Vector2(525, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_divider"]
+size = Vector2(10, 140)
+
+[sub_resource type="Theme" id="Theme_ui"]
+default_font = ExtResource("6_ui_font")
+
+[node name="Main" type="Node2D" unique_id=1130201697]
+script = ExtResource("1_game_controller")
+launcher_path = NodePath("Launcher")
+peg_board_path = NodePath("PegBoard")
+audio_manager_path = NodePath("AudioManager")
+hud_path = NodePath("HUD")
+
+[node name="Floor" type="StaticBody2D" parent="." unique_id=1488238080]
+physics_material_override = SubResource("PhysicsMaterial_walls")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor" unique_id=818961336]
+position = Vector2(960, 1070)
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="Visual" type="Polygon2D" parent="Floor" unique_id=1936520152]
+color = Color(0.36, 0.4, 0.48, 1)
+polygon = PackedVector2Array(10, 1060, 1910, 1060, 1910, 1080, 10, 1080)
+
+[node name="BallTemplate" type="RigidBody2D" parent="." unique_id=1508202928]
+visible = false
+physics_material_override = SubResource("PhysicsMaterial_ball")
+freeze = true
+continuous_cd = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BallTemplate" unique_id=131158587]
+position = Vector2(581, 245)
+shape = SubResource("CircleShape2D_ball")
+
+[node name="Sprite2D" type="Sprite2D" parent="BallTemplate" unique_id=2040095998]
+position = Vector2(581, 245)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("1_ball_texture")
+
+[node name="LeftWall" type="StaticBody2D" parent="." unique_id=757974017]
+physics_material_override = SubResource("PhysicsMaterial_walls")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall" unique_id=736029782]
+position = Vector2(10, 540)
+shape = SubResource("RectangleShape2D_vertical_wall")
+
+[node name="Visual" type="Polygon2D" parent="LeftWall" unique_id=323925738]
+color = Color(0.65, 0.68, 0.72, 1)
+polygon = PackedVector2Array(0, 0, 20, 0, 20, 1080, 0, 1080)
+
+[node name="RightWall" type="StaticBody2D" parent="." unique_id=98995761]
+position = Vector2(1900, 0)
+physics_material_override = SubResource("PhysicsMaterial_walls")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall" unique_id=225672953]
+position = Vector2(10, 540)
+shape = SubResource("RectangleShape2D_vertical_wall")
+
+[node name="Visual" type="Polygon2D" parent="RightWall" unique_id=520090356]
+color = Color(0.65, 0.68, 0.72, 1)
+polygon = PackedVector2Array(0, 0, 20, 0, 20, 1080, 0, 1080)
+
+[node name="Ceiling" type="StaticBody2D" parent="." unique_id=1194517301]
+physics_material_override = SubResource("PhysicsMaterial_walls")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ceiling" unique_id=1960246918]
+position = Vector2(960, 10)
+shape = SubResource("RectangleShape2D_ceiling")
+
+[node name="Visual" type="Polygon2D" parent="Ceiling" unique_id=1236596650]
+color = Color(0.65, 0.68, 0.72, 1)
+polygon = PackedVector2Array(0, 0, 1920, 0, 1920, 20, 0, 20)
+
+[node name="ScoringBins" type="Node2D" parent="." unique_id=1683997115]
+
+[node name="Zone1" type="Area2D" parent="ScoringBins" unique_id=786447695]
+position = Vector2(500, 1010)
+collision_layer = 0
+script = ExtResource("5_score_zone")
+score_value = 100
+zone_label = "高分奖励"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScoringBins/Zone1" unique_id=2146713199]
+shape = SubResource("RectangleShape2D_score_zone")
+
+[node name="Visual" type="Polygon2D" parent="ScoringBins/Zone1" unique_id=69219454]
+color = Color(0.12, 0.48, 0.82, 0.68)
+polygon = PackedVector2Array(-125, -50, 125, -50, 125, 50, -125, 50)
+
+[node name="Label" type="Label" parent="ScoringBins/Zone1" unique_id=164052768]
+offset_left = -100.0
+offset_top = -36.0
+offset_right = 100.0
+offset_bottom = 36.0
+theme = SubResource("Theme_ui")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.08, 0.12, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 34
+text = "+100"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Zone2" type="Area2D" parent="ScoringBins" unique_id=1106217266]
+position = Vector2(750, 1010)
+collision_layer = 0
+script = ExtResource("5_score_zone")
+score_value = 0
+ball_bonus = 1
+zone_label = "返还弹珠"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScoringBins/Zone2" unique_id=451092512]
+shape = SubResource("RectangleShape2D_score_zone")
+
+[node name="Visual" type="Polygon2D" parent="ScoringBins/Zone2" unique_id=895797045]
+color = Color(0.88, 0.6, 0.12, 0.72)
+polygon = PackedVector2Array(-125, -50, 125, -50, 125, 50, -125, 50)
+
+[node name="Label" type="Label" parent="ScoringBins/Zone2" unique_id=582645487]
+offset_left = -100.0
+offset_top = -36.0
+offset_right = 100.0
+offset_bottom = 36.0
+theme = SubResource("Theme_ui")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.08, 0.12, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 34
+text = "+1 个球"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Zone3" type="Area2D" parent="ScoringBins" unique_id=200503777]
+position = Vector2(1000, 1010)
+collision_layer = 0
+script = ExtResource("5_score_zone")
+score_value = -25
+zone_label = "惩罚区"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScoringBins/Zone3" unique_id=1182531911]
+shape = SubResource("RectangleShape2D_score_zone")
+
+[node name="Visual" type="Polygon2D" parent="ScoringBins/Zone3" unique_id=1563061179]
+color = Color(0.78, 0.18, 0.22, 0.68)
+polygon = PackedVector2Array(-125, -50, 125, -50, 125, 50, -125, 50)
+
+[node name="Label" type="Label" parent="ScoringBins/Zone3" unique_id=1068123439]
+offset_left = -100.0
+offset_top = -36.0
+offset_right = 100.0
+offset_bottom = 36.0
+theme = SubResource("Theme_ui")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.08, 0.12, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 34
+text = "-25"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Zone4" type="Area2D" parent="ScoringBins" unique_id=2005772748]
+position = Vector2(1250, 1010)
+collision_layer = 0
+script = ExtResource("5_score_zone")
+score_value = 50
+zone_label = "普通奖励"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScoringBins/Zone4" unique_id=1808992299]
+shape = SubResource("RectangleShape2D_score_zone")
+
+[node name="Visual" type="Polygon2D" parent="ScoringBins/Zone4" unique_id=1480595895]
+color = Color(0.15, 0.63, 0.4, 0.62)
+polygon = PackedVector2Array(-125, -50, 125, -50, 125, 50, -125, 50)
+
+[node name="Label" type="Label" parent="ScoringBins/Zone4" unique_id=531542107]
+offset_left = -100.0
+offset_top = -36.0
+offset_right = 100.0
+offset_bottom = 36.0
+theme = SubResource("Theme_ui")
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.05, 0.08, 0.12, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 34
+text = "+50"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MissZone" type="Area2D" parent="ScoringBins"]
+collision_layer = 0
+script = ExtResource("5_score_zone")
+score_value = 0
+zone_label = "未进入得分区"
+
+[node name="LeftCollision" type="CollisionShape2D" parent="ScoringBins/MissZone"]
+position = Vector2(197.5, 1010)
+shape = SubResource("RectangleShape2D_miss_left")
+
+[node name="RightCollision" type="CollisionShape2D" parent="ScoringBins/MissZone"]
+position = Vector2(1637.5, 1010)
+shape = SubResource("RectangleShape2D_miss_right")
+
+[node name="Dividers" type="Node2D" parent="ScoringBins" unique_id=608302664]
+
+[node name="Divider1" type="StaticBody2D" parent="ScoringBins/Dividers" unique_id=1655490065]
+position = Vector2(625, 990)
+physics_material_override = SubResource("PhysicsMaterial_walls")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScoringBins/Dividers/Divider1" unique_id=1389603469]
+shape = SubResource("RectangleShape2D_divider")
+
+[node name="Visual" type="Polygon2D" parent="ScoringBins/Dividers/Divider1" unique_id=490493600]
+color = Color(0.72, 0.75, 0.82, 1)
+polygon = PackedVector2Array(-5, -70, 5, -70, 5, 70, -5, 70)
+
+[node name="Divider2" type="StaticBody2D" parent="ScoringBins/Dividers" unique_id=1928716848]
+position = Vector2(875, 990)
+physics_material_override = SubResource("PhysicsMaterial_walls")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScoringBins/Dividers/Divider2" unique_id=974437822]
+shape = SubResource("RectangleShape2D_divider")
+
+[node name="Visual" type="Polygon2D" parent="ScoringBins/Dividers/Divider2" unique_id=1915022686]
+color = Color(0.72, 0.75, 0.82, 1)
+polygon = PackedVector2Array(-5, -70, 5, -70, 5, 70, -5, 70)
+
+[node name="Divider3" type="StaticBody2D" parent="ScoringBins/Dividers" unique_id=1436157989]
+position = Vector2(1125, 990)
+physics_material_override = SubResource("PhysicsMaterial_walls")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScoringBins/Dividers/Divider3" unique_id=516833374]
+shape = SubResource("RectangleShape2D_divider")
+
+[node name="Visual" type="Polygon2D" parent="ScoringBins/Dividers/Divider3" unique_id=1174805929]
+color = Color(0.72, 0.75, 0.82, 1)
+polygon = PackedVector2Array(-5, -70, 5, -70, 5, 70, -5, 70)
+
+[node name="RightGuard" type="StaticBody2D" parent="ScoringBins/Dividers" unique_id=1437206555]
+position = Vector2(1375, 990)
+physics_material_override = SubResource("PhysicsMaterial_walls")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScoringBins/Dividers/RightGuard" unique_id=1025939437]
+shape = SubResource("RectangleShape2D_divider")
+
+[node name="Visual" type="Polygon2D" parent="ScoringBins/Dividers/RightGuard" unique_id=1549515978]
+color = Color(0.72, 0.75, 0.82, 1)
+polygon = PackedVector2Array(-5, -70, 5, -70, 5, 70, -5, 70)
+
+[node name="PegBoard" type="Node2D" parent="." unique_id=1543468522]
+script = ExtResource("2_peg_board")
+
+[node name="Launcher" type="Node2D" parent="." unique_id=1141153081]
+position = Vector2(1700, 900)
+script = ExtResource("3_launcher")
+ball_template = NodePath("../BallTemplate")
+
+[node name="AimGuide" type="Line2D" parent="Launcher" unique_id=1213658204]
+points = PackedVector2Array(0, 0, 0, -180)
+width = 5.0
+default_color = Color(0.35, 0.85, 1, 0.9)
+
+[node name="Sprite2D" type="Sprite2D" parent="Launcher" unique_id=402705217]
+texture = ExtResource("4_launcher_texture")
+
+[node name="AudioManager" type="Node2D" parent="."]
+script = ExtResource("7_audio_manager")
+
+[node name="Music" type="AudioStreamPlayer" parent="AudioManager"]
+
+[node name="Charge" type="AudioStreamPlayer" parent="AudioManager"]
+
+[node name="SFX" type="AudioStreamPlayer" parent="AudioManager"]
+
+[node name="UI" type="AudioStreamPlayer" parent="AudioManager"]
+
+[node name="Collision" type="AudioStreamPlayer2D" parent="AudioManager"]
+max_distance = 2200.0
+attenuation = 0.35
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1506995018]
+
+[node name="HUDRoot" type="Control" parent="HUD" unique_id=993943843]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = SubResource("Theme_ui")
+
+[node name="StatusPanel" type="ColorRect" parent="HUD/HUDRoot" unique_id=1128239578]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 660.0
+offset_bottom = 188.0
+color = Color(0.035, 0.055, 0.09, 0.88)
+
+[node name="LevelLabel" type="Label" parent="HUD/HUDRoot/StatusPanel" unique_id=1824428152]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 12.0
+offset_right = 280.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 28
+text = "关卡 1 / 2"
+
+[node name="ScoreLabel" type="Label" parent="HUD/HUDRoot/StatusPanel" unique_id=1854895010]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 58.0
+offset_right = 300.0
+offset_bottom = 96.0
+theme_override_font_sizes/font_size = 28
+text = "分数 0 / 450"
+
+[node name="BallsLabel" type="Label" parent="HUD/HUDRoot/StatusPanel" unique_id=1960943512]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 106.0
+offset_right = 300.0
+offset_bottom = 144.0
+theme_override_font_sizes/font_size = 28
+text = "剩余球数 15"
+
+[node name="TimeLabel" type="Label" parent="HUD/HUDRoot/StatusPanel" unique_id=923506248]
+layout_mode = 0
+offset_left = 330.0
+offset_top = 12.0
+offset_right = 600.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 28
+text = "时间 90"
+
+[node name="BuffLabel" type="Label" parent="HUD/HUDRoot/StatusPanel" unique_id=947963473]
+layout_mode = 0
+offset_left = 330.0
+offset_top = 58.0
+offset_right = 610.0
+offset_bottom = 96.0
+theme_override_font_sizes/font_size = 24
+text = "Buff：无"
+
+[node name="HintLabel" type="Label" parent="HUD/HUDRoot/StatusPanel" unique_id=520608061]
+layout_mode = 0
+offset_left = 330.0
+offset_top = 106.0
+offset_right = 620.0
+offset_bottom = 146.0
+theme_override_colors/font_color = Color(0.65, 0.86, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "鼠标瞄准 · 按住蓄力 · 松开发射"
+
+[node name="CenterMessage" type="Label" parent="HUD/HUDRoot" unique_id=1902961248]
+layout_mode = 0
+offset_left = 510.0
+offset_top = 190.0
+offset_right = 1410.0
+offset_bottom = 252.0
+theme_override_colors/font_outline_color = Color(0.02, 0.03, 0.05, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PowerPanel" type="ColorRect" parent="HUD/HUDRoot" unique_id=1697396510]
+layout_mode = 0
+offset_left = 1420.0
+offset_top = 786.0
+offset_right = 1890.0
+offset_bottom = 870.0
+mouse_filter = 2
+color = Color(0.035, 0.055, 0.09, 0.86)
+
+[node name="PowerLabel" type="Label" parent="HUD/HUDRoot/PowerPanel" unique_id=300201467]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 450.0
+offset_bottom = 38.0
+theme_override_font_sizes/font_size = 18
+text = "力度 800  （按住蓄力，松开发射）"
+
+[node name="PowerBar" type="ProgressBar" parent="HUD/HUDRoot/PowerPanel" unique_id=781706945]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 46.0
+offset_right = 454.0
+offset_bottom = 72.0
+show_percentage = false
+
+[node name="BuffPanel" type="ColorRect" parent="HUD/HUDRoot" unique_id=43142723]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.015, 0.025, 0.05, 0.88)
+
+[node name="Card" type="ColorRect" parent="HUD/HUDRoot/BuffPanel" unique_id=610868684]
+layout_mode = 0
+offset_left = 470.0
+offset_top = 220.0
+offset_right = 1450.0
+offset_bottom = 835.0
+color = Color(0.08, 0.12, 0.2, 1)
+
+[node name="Title" type="Label" parent="HUD/HUDRoot/BuffPanel/Card" unique_id=41756270]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 35.0
+offset_right = 920.0
+offset_bottom = 95.0
+theme_override_font_sizes/font_size = 38
+text = "第一关通过！选择一个 Buff"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="HUD/HUDRoot/BuffPanel/Card" unique_id=491870182]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 105.0
+offset_right = 920.0
+offset_bottom = 145.0
+theme_override_colors/font_color = Color(0.7, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "选择期间计时暂停，Buff 仅在第二关生效"
+horizontal_alignment = 1
+
+[node name="BuffBallsButton" type="Button" parent="HUD/HUDRoot/BuffPanel/Card" unique_id=335937177]
+layout_mode = 0
+offset_left = 90.0
+offset_top = 190.0
+offset_right = 890.0
+offset_bottom = 290.0
+theme_override_font_sizes/font_size = 25
+text = "备用弹匣
+第二关额外获得 3 颗球"
+
+[node name="BuffScoreButton" type="Button" parent="HUD/HUDRoot/BuffPanel/Card" unique_id=535019142]
+layout_mode = 0
+offset_left = 90.0
+offset_top = 320.0
+offset_right = 890.0
+offset_bottom = 420.0
+theme_override_font_sizes/font_size = 25
+text = "得分增幅
+第二关正分区域提高 25%"
+
+[node name="BuffSafeButton" type="Button" parent="HUD/HUDRoot/BuffPanel/Card" unique_id=319631698]
+layout_mode = 0
+offset_left = 90.0
+offset_top = 450.0
+offset_right = 890.0
+offset_bottom = 550.0
+theme_override_font_sizes/font_size = 25
+text = "安全落袋
+第二关 -25 区域改为 0 分"
+
+[node name="ResultPanel" type="ColorRect" parent="HUD/HUDRoot" unique_id=1429842619]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.015, 0.025, 0.05, 0.9)
+
+[node name="Card" type="ColorRect" parent="HUD/HUDRoot/ResultPanel" unique_id=165685187]
+layout_mode = 0
+offset_left = 560.0
+offset_top = 230.0
+offset_right = 1360.0
+offset_bottom = 825.0
+color = Color(0.08, 0.12, 0.2, 1)
+
+[node name="ResultTitle" type="Label" parent="HUD/HUDRoot/ResultPanel/Card" unique_id=28192321]
+layout_mode = 0
+offset_left = 70.0
+offset_top = 55.0
+offset_right = 730.0
+offset_bottom = 125.0
+pivot_offset = Vector2(330, 35)
+theme_override_font_sizes/font_size = 46
+text = "通关成功！"
+horizontal_alignment = 1
+
+[node name="Sparkle" type="Label" parent="HUD/HUDRoot/ResultPanel/Card" unique_id=169237943]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 135.0
+offset_right = 720.0
+offset_bottom = 190.0
+theme_override_colors/font_color = Color(1, 0.82, 0.3, 1)
+theme_override_font_sizes/font_size = 32
+text = "✦  ✧  ✦  ✧  ✦"
+horizontal_alignment = 1
+
+[node name="ResultStats" type="Label" parent="HUD/HUDRoot/ResultPanel/Card" unique_id=942685582]
+layout_mode = 0
+offset_left = 90.0
+offset_top = 215.0
+offset_right = 710.0
+offset_bottom = 405.0
+theme_override_font_sizes/font_size = 28
+text = "总用时：0 秒
+两关总分：0
+剩余球数：0
+本局 Buff：无"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RetryButton" type="Button" parent="HUD/HUDRoot/ResultPanel/Card" unique_id=1441951441]
+layout_mode = 0
+offset_left = 180.0
+offset_top = 450.0
+offset_right = 620.0
+offset_bottom = 525.0
+theme_override_font_sizes/font_size = 28
+text = "从第一关重新挑战"
